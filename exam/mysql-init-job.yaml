@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mysql-init-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: mysql-init
+        image: mysql:latest
+        env:
+        - name: MY_SQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password
+        command: ["sh", "-c"]
+        args:
+        - |
+          mysql -h mysql-service -u root -p "$MYSQL_ROOT_PASSWORD" < /scripts/init-db.sql
